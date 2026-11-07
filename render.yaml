@@ -7,6 +7,8 @@ services:
     envVars:
       - key: APP_NAME
         value: "UPI Gateway"
+      - key: APP_URL
+        value: "https://upi-gateway-ogfw.onrender.com"
       - key: APP_ENV
         value: production
       - key: APP_DEBUG

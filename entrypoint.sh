@@ -24,5 +24,9 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/d
 # Run database migrations
 php artisan migrate --force || true
 
+# Clear any cached configuration
+php artisan config:clear || true
+php artisan view:clear || true
+
 # Start Apache
 exec apache2-foreground
