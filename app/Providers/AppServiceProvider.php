@@ -30,11 +30,19 @@ class AppServiceProvider extends ServiceProvider
         view()->share('csp_nonce', '');
 
         // Dynamically adjust root URL to match incoming request so CSS/JS assets never get blocked by CSP
-        if (isset($_SERVER['HTTP_HOST'])) {
-            $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-                || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-                ? 'https' : 'http';
+        if (env('RENDER_EXTERNAL_URL')) {
+            \Illuminate\Support\Facades\URL::forceRootUrl(env('RENDER_EXTERNAL_URL'));
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        } elseif (isset($_SERVER['HTTP_HOST'])) {
+            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https')
+                || (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) === 'on')
+                || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+            $proto = $isHttps ? 'https' : 'http';
             \Illuminate\Support\Facades\URL::forceRootUrl($proto . '://' . $_SERVER['HTTP_HOST']);
+            if ($isHttps) {
+                \Illuminate\Support\Facades\URL::forceScheme('https');
+            }
         }
     }
 }

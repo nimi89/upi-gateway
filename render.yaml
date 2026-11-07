@@ -19,3 +19,5 @@ services:
         value: database
       - key: QUEUE_CONNECTION
         value: sync
+      - key: GATEWAY_CSP_ENFORCE
+        value: "false"
