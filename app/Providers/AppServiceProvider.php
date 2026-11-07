@@ -28,5 +28,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(PaymentAccount::class, PaymentAccountPolicy::class);
 
         view()->share('csp_nonce', '');
+
+        // Dynamically adjust root URL to match incoming request so CSS/JS assets never get blocked by CSP
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+                ? 'https' : 'http';
+            \Illuminate\Support\Facades\URL::forceRootUrl($proto . '://' . $_SERVER['HTTP_HOST']);
+        }
     }
 }
