@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: upi-gateway
+    runtime: docker
+    plan: free
+    region: singapore
+    envVars:
+      - key: APP_NAME
+        value: "UPI Gateway"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        value: "base64:XQJGDalBw5fLBIxS3MBLZu8/6K1QU8q0HEssxjOPtQo="
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: SESSION_DRIVER
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
