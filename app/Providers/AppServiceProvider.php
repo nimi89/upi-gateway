@@ -29,12 +29,12 @@ class AppServiceProvider extends ServiceProvider
 
         view()->share('csp_nonce', '');
 
-        // Dynamically adjust root URL to match incoming request so CSS/JS assets never get blocked by CSP
-        if (isset($_SERVER['HTTP_HOST'])) {
-            $isLocal = str_contains($_SERVER['HTTP_HOST'], 'localhost') || str_contains($_SERVER['HTTP_HOST'], '127.0.0.1');
-            $scheme = $isLocal ? 'http' : 'https';
-            \Illuminate\Support\Facades\URL::forceRootUrl($scheme . '://' . $_SERVER['HTTP_HOST']);
-            \Illuminate\Support\Facades\URL::forceScheme($scheme);
+        // Use relative root paths for Vite assets so they load flawlessly over HTTPS/HTTP on any host without mixed-content issues
+        \Illuminate\Support\Facades\Vite::createAssetPathsUsing(fn ($path) => '/' . ltrim($path, '/'));
+
+        // Force HTTPS for all external/public hosts
+        if (isset($_SERVER['HTTP_HOST']) && ! str_contains($_SERVER['HTTP_HOST'], 'localhost') && ! str_contains($_SERVER['HTTP_HOST'], '127.0.0.1')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
         }
     }
 }
